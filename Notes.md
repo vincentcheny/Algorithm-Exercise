@@ -462,6 +462,42 @@ class Solution:
         return small_head.next
 ```
 
+### 面试题 02.06. 回文链表
+
+检查输入的链表是否回文
+
+Solution
+
+- 快慢指针找到中点后，反转后半链表，最后和前半链表作比较
+
+Code
+
+```python
+class Solution:
+    def isPalindrome(self, head: ListNode) -> bool:
+        if not head:
+            return True
+        slow, fast = head, head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        pre, cur, post = None, slow, slow.next
+        while cur:
+            cur.next = pre
+            pre = cur
+            cur = post
+            if post:
+                post = post.next
+        # pre is the head of right-half linked-list
+        # if len(head) is odd, the end of pre and head should be the same node
+        while pre: 
+            if pre.val != head.val:
+                return False
+            pre = pre.next
+            head = head.next
+        return True
+```
+
 
 
 ## Array
