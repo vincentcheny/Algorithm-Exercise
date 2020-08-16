@@ -356,6 +356,37 @@ class Solution:
         return new_head
 ```
 
+### 82. 删除排序列表中的重复元素 Ⅱ
+
+Solution
+
+- 判断是否重复数字的开端，若是，连续删除具有相同值的节点
+
+Code
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def deleteDuplicates(self, head: ListNode) -> ListNode:
+        dummy = ListNode(-1)
+        dummy.next = head
+        cur = dummy
+        while cur.next and cur.next.next:
+            if cur.next.val == cur.next.next.val: # check if cur.next is the beginning of deletion
+                temp = cur.next
+                while temp and temp.val == cur.next.val:
+                    temp = temp.next
+                cur.next = temp
+            else:
+                cur = cur.next
+        return dummy.next
+```
+
 
 
 ## Array
