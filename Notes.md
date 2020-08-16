@@ -39,7 +39,7 @@ class Solution:
         return head
 ```
 
-### 面试题 02.08 环路检测
+### 面试题 02.08 环路检测/142. 环形链表 II
 
 给定一个链表，实现一个算法返回环路的开头节点。若无，返回None。
 
@@ -59,21 +59,21 @@ class Solution:
     def detectCycle(self, head: ListNode) -> ListNode:
         if not head or not head.next:
             return None
-        slow = head.next
-        fast = head.next.next
-        while slow is not head:
-            slow = slow.next
-            if not fast or not fast.next:
-                return None
+        slow, fast = head, head
+        while fast and fast.next:
             fast = fast.next.next
-        slow2 = head
-        while slow is not slow2:
             slow = slow.next
-            slow2 = slow2.next
-        return slow
+            if fast is slow:
+                break
+        if not fast or not fast.next:
+            return None
+        while head is not slow:
+            head = head.next
+            slow = slow.next
+        return head
 ```
 
-### [138. 复制带随机指针的链表](https://leetcode-cn.com/problems/copy-list-with-random-pointer/)
+### 138. 复制带随机指针的链表
 
 给定一个链表，每个节点包含一个额外增加的随机指针，该指针可以指向链表中的任何节点或空节点。要求返回这个链表的深拷贝。-10000 <= Node.val <= 10000。`Node.random` 为空（null）或指向链表中的节点。节点数目不超过 1000 。![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/01/09/e1.png)
 
@@ -151,7 +151,7 @@ class Solution:
         return d[head]
 ```
 
-### [面试题 02.07. 链表相交](https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/)
+### 面试题 02.07. 链表相交
 
 给定两个（单向）链表，判定它们是否相交并返回交点。如果两个链表没有交点，返回 `null` 。可假定整个链表结构中没有循环。
 
@@ -208,7 +208,7 @@ class Solution:
         return None
 ```
 
-### [1171. 从链表中删去总和值为零的连续节点](https://leetcode-cn.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/)
+### 1171. 从链表中删去总和值为零的连续节点
 
 给定一个链表的头节点 head，要求反复删去链表中由和为 0 的连续节点组成的序列，直到不存在这样的序列为止。删除完毕后，请你返回最终结果链表的头节点。你可以返回任何满足题目要求的答案。
 
@@ -385,6 +385,44 @@ class Solution:
             else:
                 cur = cur.next
         return dummy.next
+```
+
+### 1367. 二叉树中的列表
+
+给你一棵以 root 为根的二叉树和一个 head 为第一个节点的链表。如果在二叉树中，存在一条一直向下的路径，且每个点的数值恰好一一对应以 head 为首的链表中每个节点的值，那么请你返回 True ，否则返回 False 。
+
+Solution
+
+- 对于每个子问题中的 root，先判断是否能从 root 开始对应链表中的值，再判断左右子节点为根时是否对应
+
+Code
+
+```python
+class Solution:
+    def isPartialSubPath(self, head: ListNode, root: TreeNode) -> bool:
+        if not head:
+            return True
+        elif not root:
+            return False
+        if head.val == root.val:
+            return self.isPartialSubPath(head.next, root.left) or \
+        		self.isPartialSubPath(head.next, root.right)
+        else:
+            return False
+
+    def isSubPath(self, head: ListNode, root: TreeNode) -> bool:
+        if not head:
+            return True
+        elif not root:
+            return False
+        if head.val == root.val:
+            return self.isPartialSubPath(head.next, root.left) or \
+                self.isPartialSubPath(head.next, root.right) or \
+                self.isSubPath(head, root.left) or \
+                self.isSubPath(head, root.right)
+        else:
+            return self.isSubPath(head, root.left) or \
+                    self.isSubPath(head, root.right)
 ```
 
 
