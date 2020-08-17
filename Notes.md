@@ -498,6 +498,50 @@ class Solution:
         return True
 ```
 
+### 445. 两数相加 II
+
+给定两个非空链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。可以假设除了数字 0 之外，这两个数字都不会以零开头。
+
+**示例：**
+
+```
+输入：(7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
+输出：7 -> 8 -> 0 -> 7
+```
+
+Solution
+
+- 用栈（list）存储值，倒序构建新的链表
+
+Code
+
+```python
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        if not l1: return l2
+        if not l2: return l1
+        s1, s2 = [], []
+        while l1:
+            s1.append(l1.val)
+            l1 = l1.next
+        while l2:
+            s2.append(l2.val)
+            l2 = l2.next
+        cur = None
+        remaining = 0
+        while s1 or s2 or remaining > 0:
+            digit_sum = remaining
+            if s1:
+                digit_sum += s1.pop()
+            if s2:
+                digit_sum += s2.pop()
+            new_node = ListNode(digit_sum%10)
+            remaining = digit_sum // 10
+            new_node.next = cur
+            cur = new_node
+        return cur
+```
+
 
 
 ## Array
