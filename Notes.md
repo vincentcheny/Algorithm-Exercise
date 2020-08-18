@@ -2,6 +2,33 @@
 
 ## Linked-List
 
+### 206. 反转链表
+
+Code
+
+```python
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        # iteration
+        prev = None
+        while head:
+            tmp = head.next
+            head.next = prev
+            prev = head
+            head = tmp
+        return prev
+
+        # recursion
+        if not head or not head.next:
+            return head
+        new_head = self.reverseList(head.next)
+        head.next.next = head # a tricky step
+        head.next = None
+        return new_head
+```
+
+
+
 ### 328 奇偶链表
 
 给定一个单链表，把所有的奇数序号节点和偶数序号节点分别排在一起。尝试使用原地算法完成。你的算法的空间复杂度应为 O(1)，时间复杂度应为 O(nodes)，nodes 为节点总数。
@@ -540,6 +567,54 @@ class Solution:
             new_node.next = cur
             cur = new_node
         return cur
+```
+
+### 143. 重排链表
+
+给定一个单链表 *L*：*L*0→*L*1→…→*L*n-1→*L*n ，将其重新排列后变为： *L*0→*L*n→*L*1→*L*n-1→*L*2→*L*n-2→… 要求进行实际节点交换而不是单纯改变节点内部值。
+
+Solution
+
+- 方法一
+  - 
+- 方法二
+  - 快慢指针找到中位节点后翻转后半节点，将后半节点整合进前半
+
+Code
+
+```python
+class Solution:
+    # Solution 1
+    def reorderList(self, head: ListNode) -> None:
+        
+    # Solution 2
+    def reorderList(self, head: ListNode) -> None:
+        if not head or not head.next:
+            return head
+        # let slow stop at or before the median so that we can set the end of first half to be None
+        slow, fast = head, head.next 
+        while fast and fast.next:
+            fast = fast.next.next
+            slow = slow.next
+        tmp = slow
+        slow = slow.next
+        tmp.next = None
+        prev, cur = None, slow
+        while cur:
+            next_node = cur.next
+            cur.next = prev
+            prev = cur
+            cur = next_node
+        head1, head2 = head, prev
+        while head2:
+            next_head1 = head1.next
+            head1.next = head2
+            head2 = head2.next
+            head1.next.next = next_head1
+            head1 = next_head1
+        if head1:
+            head1.next = None
+        return head
 ```
 
 
