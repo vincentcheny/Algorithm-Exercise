@@ -244,6 +244,7 @@ Solution
 - 两次遍历
   - 第一次统计累加和，并将``累加和->最后获得此和的节点`` 这个映射放入字典
   - 第二次统计累加和，让当前节点跨越相同累加和的子序列
+  - 【假设节点A,B累加和相等，则节点序列[A+1, B]总和值为零】
 
 Code
 
@@ -325,14 +326,7 @@ class Solution:
         return root
 ```
 
-引申：[Morris 遍历算法](https://www.cnblogs.com/anniekim/archive/2013/06/15/morristraversal.html)（时间O(n)，空间O(1)遍历二叉树）
-
-- 简述（以中序遍历为例）：
-  - 若当前节点的左子树不存在，则输出当前节点，右节点成为新的当前节点
-  - 若存在
-    - 若中序遍历的前驱节点的右子节点（左一下，一直往右）为空，则该右子节点指向当前节点，本左子节点成为新的当前节点；
-    - 若为当前节点，则将其置空（还原），输出当前节点，本右子节点成为新的当前节点
-- 看上面链接的复杂度分析为什么Morris遍历时间复杂度是O(n)
+引申：Morris 遍历算法（时间O(n)，空间O(1)遍历二叉树），见94. 二叉树的中序遍历
 
 ### 25. K 个一组反转链表
 
@@ -656,6 +650,57 @@ class Solution:
                 return [a.get(target-val), i]
             a[val] = i
 ```
+
+
+
+## Tree
+
+### 94. 二叉树的中序遍历
+
+给定一个二叉树，返回它的*中序* 遍历。
+
+Solution
+
+- 方法一，递归（时间O(n)，空间O(logn)）
+- 方法二，[Morris 遍历算法](https://www.cnblogs.com/anniekim/archive/2013/06/15/morristraversal.html)（时间O(n)，空间O(1)）
+  - 若当前节点的左子树不存在，则输出当前节点，右节点成为新的当前节点
+  - 若存在
+    - 若中序遍历的前驱节点的右子节点（左一下，一直往右）为空，则该右子节点指向当前节点，本左子节点成为新的当前节点；
+    - 若为当前节点，则将其置空（还原），输出当前节点，本右子节点成为新的当前节点
+  - 看上面链接的复杂度分析为什么Morris遍历时间复杂度是O(n)
+
+Code
+
+```python
+class Solution:
+    def inorderTraversal(self, root: TreeNode) -> List[int]:
+        # recursion
+        if not root:
+            return []
+        return self.inorderTraversal(root.left) + [root.val] + self.inorderTraversal(root.right)
+
+        # morris traveral
+        cur = root
+        res = []
+        while cur:
+            if not cur.left:
+                res.append(cur.val)
+                cur = cur.right
+            else:
+                prev = cur.left
+                while prev.right and prev.right is not cur:
+                    prev = prev.right
+                if not prev.right:
+                    prev.right = cur
+                    cur = cur.left
+                else:
+                    prev.right = None
+                    res.append(cur.val)
+                    cur = cur.right
+        return res
+```
+
+
 
 ## Number
 
