@@ -2,7 +2,7 @@
 
 ## Linked-List
 
-### 206. 反转链表
+### 206. 反转链表 :star:
 
 Code
 
@@ -100,7 +100,7 @@ class Solution:
         return head
 ```
 
-### 138. 复制带随机指针的链表
+### 138. 复制带随机指针的链表:star:
 
 给定一个链表，每个节点包含一个额外增加的随机指针，该指针可以指向链表中的任何节点或空节点。要求返回这个链表的深拷贝。-10000 <= Node.val <= 10000。`Node.random` 为空（null）或指向链表中的节点。节点数目不超过 1000 。![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/01/09/e1.png)
 
@@ -483,7 +483,7 @@ class Solution:
         return small_head.next
 ```
 
-### 面试题 02.06. 回文链表
+### 面试题 02.06. 回文链表:star:
 
 检查输入的链表是否回文
 
@@ -563,6 +563,39 @@ class Solution:
         return cur
 ```
 
+### 面试题 02.05. 链表求和
+
+题目同上，但链表顺序变为倒序
+
+Code
+
+```python
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        if not l1:
+            return l2
+        if not l2:
+            return l1
+        head = ListNode(None)
+        cur = head
+        remain = 0
+        while l1 or l2 or remain:
+            if (not l1 or not l2) and remain == 0:
+                cur.next = l1 if not l2 else l2
+                return head.next
+            value = remain
+            value += l1.val if l1 else 0
+            value += l2.val if l2 else 0
+            remain = value // 10
+            cur.next = ListNode(value%10)
+            cur = cur.next
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
+        return head.next
+```
+
+
+
 ### 143. 重排链表
 
 给定一个单链表 *L*：*L*0→*L*1→…→*L*n-1→*L*n ，将其重新排列后变为： *L*0→*L*n→*L*1→*L*n-1→*L*2→*L*n-2→… 要求进行实际节点交换而不是单纯改变节点内部值。
@@ -615,7 +648,7 @@ class Solution:
 
 ## Array
 
-### 001 两数之和
+### 001 两数之和:star:
 
 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
 
@@ -655,7 +688,7 @@ class Solution:
 
 ## Tree
 
-### 94. 二叉树的中序遍历
+### 94. 二叉树的中序遍历:star:
 
 给定一个二叉树，返回它的*中序* 遍历。
 
@@ -704,7 +737,7 @@ class Solution:
 
 ## Number
 
-### 343. 整数拆分
+### 343. 整数拆分:star:
 
 给定一个正整数 *n*，将其拆分为至少两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
 
