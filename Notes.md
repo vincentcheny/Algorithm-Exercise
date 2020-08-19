@@ -1,6 +1,8 @@
 [TOC]
 
-## Linked-List
+# Linked-List
+
+## 链表顺序
 
 ### 206. 反转链表 :star:
 
@@ -25,6 +27,39 @@ class Solution:
         head.next.next = head # a tricky step
         head.next = None
         return new_head
+```
+
+### 92. 反转链表 Ⅱ
+
+反转从位置 *m* 到 *n* 的链表。请使用一趟扫描完成反转。
+
+Code
+
+```python
+class Solution:
+    def reverseBetween(self, head: ListNode, m: int, n: int) -> ListNode:
+        def reverse(head, n):
+            prev = None
+            cur = head
+            cnt = 0
+            while cur and cnt < n:
+                next_node = cur.next
+                cur.next = prev
+                prev = cur
+                cur = next_node
+                cnt += 1
+            return prev, cur
+        if m == n:
+            return head
+        dummy = ListNode(None)
+        dummy.next = head
+        cur = dummy
+        for _ in range(m-1):
+            cur = cur.next
+        sub_head, sub_end = reverse(cur.next, n-m+1)
+        cur.next.next = sub_end
+        cur.next = sub_head
+        return dummy.next
 ```
 
 
