@@ -452,6 +452,66 @@ class Solution:
                     self.isSubPath(head, root.right)
 ```
 
+### 98. 验证二叉搜索树:star:
+
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+
+- 假设一个二叉搜索树具有如下特征：
+  - 节点的左子树只包含小于当前节点的数。
+  - 节点的右子树只包含大于当前节点的数。
+  - 所有左子树和右子树自身必须也是二叉搜索树。
+
+Solution
+
+- 方法一，递归中序遍历
+- 方法二，使用 Morris traversal 判断中序遍历是否递增
+
+Code
+
+```python
+class Solution:
+    def __init__(self):
+        self.last_val = -float('inf')
+
+    def isValidBST(self, root: TreeNode) -> bool:
+        # recursion
+        if not root:
+            return True
+        if not self.isValidBST(root.left):
+            return False
+        if root.val <= self.last_val:
+            return False
+        self.last_val = root.val
+        if not self.isValidBST(root.right):
+            return False
+        return True
+
+        # iteration
+        cur = root
+        while cur:
+            if not cur.left:
+                if cur.val <= self.last_val:
+                    return False
+                self.last_val = cur.val
+                cur = cur.right
+            else:
+                prev = cur.left
+                while prev.right and prev.right is not cur:
+                    prev = prev.right
+                if not prev.right:
+                    prev.right = cur
+                    cur = cur.left
+                else:
+                    if cur.val <= self.last_val:
+                        return False
+                    self.last_val = cur.val
+                    prev.right = None
+                    cur = cur.right
+        return True
+```
+
+
+
 ## 链表值
 
 ### 1171. 从链表中删去总和值为零的连续节点
