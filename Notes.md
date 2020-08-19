@@ -62,7 +62,54 @@ class Solution:
         return dummy.next
 ```
 
+### 25. K 个一组反转链表
 
+给你一个链表，每 *k* 个节点一组进行翻转，请你返回翻转后的链表。如果节点总数不是 *k* 的整数倍，那么请将最后剩余的节点保持原有顺序。要求实际交换节点而不是改变内部的值。
+
+Solution
+
+- 检查剩余节点是否有K个/先扫描链表获得长度，反转
+
+Code
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
+        def reverseNth(head, n):
+            cur = head
+            prev = None
+            for i in range(n):
+                post = cur.next
+                cur.next = prev
+                prev = cur
+                cur = post
+            head.next = cur
+            return prev, head
+        cur = head
+        prev = None
+        new_head = head
+        while True:
+            # check reversibility
+            temp = cur
+            for _ in range(k):
+                if not temp:
+                    return new_head
+                temp = temp.next
+            cur, old_head = reverseNth(cur,k) # new/old head of sub-sequence
+            if new_head is head and k != 1:
+                new_head = cur
+            if prev:
+                prev.next = cur
+            prev = old_head
+            cur = old_head.next
+        return new_head
+```
 
 ### 328 奇偶链表
 
@@ -101,6 +148,93 @@ class Solution:
         return head
 ```
 
+### 86. 分隔链表
+
+给定一个链表和一个特定值 *x*，对链表进行分隔，使得所有小于 *x* 的节点都在大于或等于 *x* 的节点之前。保留两个分区中每个节点的初始相对位置。
+
+**示例:**
+
+```
+输入: head = 1->4->3->2->5->2, x = 3
+输出: 1->2->2->4->3->5
+```
+
+Solution
+
+- 用两个指针分别维护一个子链表，最后将二者连接起来
+
+Code
+
+```python
+class Solution:
+    def partition(self, head: ListNode, x: int) -> ListNode:
+        small = ListNode(None)
+        large = ListNode(None)
+        small_head = small
+        large_head = large
+        while head:
+            if head.val < x:
+                small.next = head
+                small = small.next
+            else:
+                large.next = head
+                large = large.next
+            head = head.next
+        large.next = None
+        small.next = large_head.next
+        return small_head.next
+```
+
+### 143. 重排链表
+
+给定一个单链表 *L*：*L*0→*L*1→…→*L*n-1→*L*n ，将其重新排列后变为： *L*0→*L*n→*L*1→*L*n-1→*L*2→*L*n-2→… 要求进行实际节点交换而不是单纯改变节点内部值。
+
+Solution
+
+- 方法一
+  - 
+- 方法二
+  - 快慢指针找到中位节点后翻转后半节点，将后半节点整合进前半
+
+Code
+
+```python
+class Solution:
+    # Solution 1
+    def reorderList(self, head: ListNode) -> None:
+        
+    # Solution 2
+    def reorderList(self, head: ListNode) -> None:
+        if not head or not head.next:
+            return head
+        # let slow stop at or before the median so that we can set the end of first half to be None
+        slow, fast = head, head.next 
+        while fast and fast.next:
+            fast = fast.next.next
+            slow = slow.next
+        tmp = slow
+        slow = slow.next
+        tmp.next = None
+        prev, cur = None, slow
+        while cur:
+            next_node = cur.next
+            cur.next = prev
+            prev = cur
+            cur = next_node
+        head1, head2 = head, prev
+        while head2:
+            next_head1 = head1.next
+            head1.next = head2
+            head2 = head2.next
+            head1.next.next = next_head1
+            head1 = next_head1
+        if head1:
+            head1.next = None
+        return head
+```
+
+## 链表状态
+
 ### 面试题 02.08 环路检测/142. 环形链表 II
 
 给定一个链表，实现一个算法返回环路的开头节点。若无，返回None。
@@ -134,6 +268,340 @@ class Solution:
             slow = slow.next
         return head
 ```
+
+### 面试题 02.06. 回文链表:star:
+
+检查输入的链表是否回文
+
+Solution
+
+- 快慢指针找到中点后，反转后半链表，最后和前半链表作比较
+
+Code
+
+```python
+class Solution:
+    def isPalindrome(self, head: ListNode) -> bool:
+        if not head:
+            return True
+        slow, fast = head, head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        pre, cur, post = None, slow, slow.next
+        while cur:
+            cur.next = pre
+            pre = cur
+            cur = post
+            if post:
+                post = post.next
+        # pre is the head of right-half linked-list
+        # if len(head) is odd, the end of pre and head should be the same node
+        while pre: 
+            if pre.val != head.val:
+                return False
+            pre = pre.next
+            head = head.next
+        return True
+```
+
+### 面试题 02.07. 链表相交
+
+给定两个（单向）链表，判定它们是否相交并返回交点。如果两个链表没有交点，返回 `null` 。可假定整个链表结构中没有循环。
+
+Solution
+
+- 对齐后遍历
+  - 分别遍历链表计算长度，让长链表向前走直至补齐差值，遍历对比
+- 双指针单次遍历（学习思路）
+  - 假设 headA 到交点距离为 a，headB 到交点距离为 b，交点到尾节点距离为 c，有``(a+c)+b=(b+c)+a``即两个指针遍历至末尾时，若从对方头节点继续遍历，则二者会在交点相遇
+  - <img src="https://pic.leetcode-cn.com/bb47e810087820bff49a867c8a8de0dfb32a15147bd98b16e8fd93e81d15da31-L.png" alt="L.png" style="zoom:25%;" />
+
+Code
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # Solution 1
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+        if not headA or not headB:
+            return None
+        lenA = 0
+        lenB = 0
+        cur = headA
+        while cur:
+            lenA += 1
+            cur = cur.next
+        cur = headB
+        while cur:
+            lenB += 1
+            cur = cur.next
+        if lenA > lenB:
+            for _ in range(lenA-lenB):
+                headA = headA.next
+        elif lenB > lenA:
+            for _ in range(lenB-lenA):
+                headB = headB.next
+        while headA is not headB:
+            headA = headA.next
+            headB = headB.next
+        return headA
+    # Solution 2
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+        p1, p2 = headA, headB
+        while p1 or p2:
+            if p1 is p2:
+                return p1
+            p1 = p1.next if p1 else headB
+            p2 = p2.next if p2 else headA
+        return None
+```
+
+### 114. 二叉树展开为链表
+
+给定一个二叉树，原地将它展开为一个单链表
+
+```
+例如，给定二叉树
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+将其展开为：
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+```
+
+Solution
+
+- 将当前右子树放到当前左子树最右节点的右子树上，将当前左子树改为右子树，时间O(n)，空间O(1)
+
+Code
+
+```python
+class Solution:
+    def flatten(self, root: TreeNode) -> None:
+        def get_right_end(node):
+            while node.right:
+                node = node.right
+            return node
+
+        cur = root
+        while cur:
+            if cur.left:
+                right_end = get_right_end(cur.left)
+                right_end.right = cur.right
+                cur.right = cur.left
+                cur.left = None
+            cur = cur.right
+        return root
+```
+
+引申：Morris 遍历算法（时间O(n)，空间O(1)遍历二叉树），见94. 二叉树的中序遍历
+
+### 1367. 二叉树中的列表:star:
+
+给你一棵以 root 为根的二叉树和一个 head 为第一个节点的链表。如果在二叉树中，存在一条一直向下的路径，且每个点的数值恰好一一对应以 head 为首的链表中每个节点的值，那么请你返回 True ，否则返回 False 。
+
+Solution
+
+- 对于每个子问题中的 root，先判断是否能从 root 开始对应链表中的值，再判断左右子节点为根时是否对应
+
+Code
+
+```python
+class Solution:
+    def isPartialSubPath(self, head: ListNode, root: TreeNode) -> bool:
+        if not head:
+            return True
+        elif not root:
+            return False
+        if head.val == root.val:
+            return self.isPartialSubPath(head.next, root.left) or \
+        		self.isPartialSubPath(head.next, root.right)
+        else:
+            return False
+
+    def isSubPath(self, head: ListNode, root: TreeNode) -> bool:
+        if not head:
+            return True
+        elif not root:
+            return False
+        if head.val == root.val:
+            return self.isPartialSubPath(head.next, root.left) or \
+                self.isPartialSubPath(head.next, root.right) or \
+                self.isSubPath(head, root.left) or \
+                self.isSubPath(head, root.right)
+        else:
+            return self.isSubPath(head, root.left) or \
+                    self.isSubPath(head, root.right)
+```
+
+## 链表值
+
+### 1171. 从链表中删去总和值为零的连续节点
+
+给定一个链表的头节点 head，要求反复删去链表中由和为 0 的连续节点组成的序列，直到不存在这样的序列为止。删除完毕后，请你返回最终结果链表的头节点。你可以返回任何满足题目要求的答案。
+
+Solution
+
+- 两次遍历
+  - 第一次统计累加和，并将``累加和->最后获得此和的节点`` 这个映射放入字典
+  - 第二次统计累加和，让当前节点跨越相同累加和的子序列
+  - 【假设节点A,B累加和相等，则节点序列[A+1, B]总和值为零】
+
+Code
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def removeZeroSumSublists(self, head: ListNode) -> ListNode:
+        dummy = ListNode(0)
+        dummy.next = head
+        d = {0:dummy}
+        cur = head
+        cnt = 0
+        while cur:
+            cnt += cur.val
+            d[cnt] = cur
+            cur = cur.next
+        cur = dummy
+        cnt = 0
+        while cur:
+            cnt += cur.val
+            if cnt in d:
+                cur.next = d[cnt].next
+            cur = cur.next
+        return dummy.next
+```
+
+### 82. 删除排序列表中的重复元素 Ⅱ
+
+Solution
+
+- 判断是否重复数字的开端，若是，连续删除具有相同值的节点
+
+Code
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def deleteDuplicates(self, head: ListNode) -> ListNode:
+        dummy = ListNode(-1)
+        dummy.next = head
+        cur = dummy
+        while cur.next and cur.next.next:
+            if cur.next.val == cur.next.next.val: # check if cur.next is the beginning of deletion
+                temp = cur.next
+                while temp and temp.val == cur.next.val:
+                    temp = temp.next
+                cur.next = temp
+            else:
+                cur = cur.next
+        return dummy.next
+```
+
+### 445. 两数相加 II
+
+给定两个非空链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。可以假设除了数字 0 之外，这两个数字都不会以零开头。
+
+**示例：**
+
+```
+输入：(7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
+输出：7 -> 8 -> 0 -> 7
+```
+
+Solution
+
+- 用栈（list）存储值，倒序构建新的链表
+
+Code
+
+```python
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        if not l1: return l2
+        if not l2: return l1
+        s1, s2 = [], []
+        while l1:
+            s1.append(l1.val)
+            l1 = l1.next
+        while l2:
+            s2.append(l2.val)
+            l2 = l2.next
+        cur = None
+        remaining = 0
+        while s1 or s2 or remaining > 0:
+            digit_sum = remaining
+            if s1:
+                digit_sum += s1.pop()
+            if s2:
+                digit_sum += s2.pop()
+            new_node = ListNode(digit_sum%10)
+            remaining = digit_sum // 10
+            new_node.next = cur
+            cur = new_node
+        return cur
+```
+
+### 面试题 02.05. 链表求和
+
+题目同上，但链表顺序变为倒序
+
+Code
+
+```python
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        if not l1:
+            return l2
+        if not l2:
+            return l1
+        head = ListNode(None)
+        cur = head
+        remain = 0
+        while l1 or l2 or remain:
+            if (not l1 or not l2) and remain == 0:
+                cur.next = l1 if not l2 else l2
+                return head.next
+            value = remain
+            value += l1.val if l1 else 0
+            value += l2.val if l2 else 0
+            remain = value // 10
+            cur.next = ListNode(value%10)
+            cur = cur.next
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
+        return head.next
+```
+
+## 链表操作
 
 ### 138. 复制带随机指针的链表:star:
 
@@ -213,515 +681,7 @@ class Solution:
         return d[head]
 ```
 
-### 面试题 02.07. 链表相交
-
-给定两个（单向）链表，判定它们是否相交并返回交点。如果两个链表没有交点，返回 `null` 。可假定整个链表结构中没有循环。
-
-Solution
-
-- 对齐后遍历
-  - 分别遍历链表计算长度，让长链表向前走直至补齐差值，遍历对比
-- 双指针单次遍历（学习思路）
-  - 假设 headA 到交点距离为 a，headB 到交点距离为 b，交点到尾节点距离为 c，有``(a+c)+b=(b+c)+a``即两个指针遍历至末尾时，若从对方头节点继续遍历，则二者会在交点相遇
-  - <img src="https://pic.leetcode-cn.com/bb47e810087820bff49a867c8a8de0dfb32a15147bd98b16e8fd93e81d15da31-L.png" alt="L.png" style="zoom:25%;" />
-
-Code
-
-```python
-# Definition for singly-linked list.
-# class ListNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.next = None
-
-class Solution:
-    # Solution 1
-    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
-        if not headA or not headB:
-            return None
-        lenA = 0
-        lenB = 0
-        cur = headA
-        while cur:
-            lenA += 1
-            cur = cur.next
-        cur = headB
-        while cur:
-            lenB += 1
-            cur = cur.next
-        if lenA > lenB:
-            for _ in range(lenA-lenB):
-                headA = headA.next
-        elif lenB > lenA:
-            for _ in range(lenB-lenA):
-                headB = headB.next
-        while headA is not headB:
-            headA = headA.next
-            headB = headB.next
-        return headA
-    # Solution 2
-    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
-        p1, p2 = headA, headB
-        while p1 or p2:
-            if p1 is p2:
-                return p1
-            p1 = p1.next if p1 else headB
-            p2 = p2.next if p2 else headA
-        return None
-```
-
-### 1171. 从链表中删去总和值为零的连续节点
-
-给定一个链表的头节点 head，要求反复删去链表中由和为 0 的连续节点组成的序列，直到不存在这样的序列为止。删除完毕后，请你返回最终结果链表的头节点。你可以返回任何满足题目要求的答案。
-
-Solution
-
-- 两次遍历
-  - 第一次统计累加和，并将``累加和->最后获得此和的节点`` 这个映射放入字典
-  - 第二次统计累加和，让当前节点跨越相同累加和的子序列
-  - 【假设节点A,B累加和相等，则节点序列[A+1, B]总和值为零】
-
-Code
-
-```python
-# Definition for singly-linked list.
-# class ListNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.next = None
-
-class Solution:
-    def removeZeroSumSublists(self, head: ListNode) -> ListNode:
-        dummy = ListNode(0)
-        dummy.next = head
-        d = {0:dummy}
-        cur = head
-        cnt = 0
-        while cur:
-            cnt += cur.val
-            d[cnt] = cur
-            cur = cur.next
-        cur = dummy
-        cnt = 0
-        while cur:
-            cnt += cur.val
-            if cnt in d:
-                cur.next = d[cnt].next
-            cur = cur.next
-        return dummy.next
-```
-
-### 114. 二叉树展开为链表
-
-给定一个二叉树，原地将它展开为一个单链表
-
-```
-例如，给定二叉树
-    1
-   / \
-  2   5
- / \   \
-3   4   6
-将其展开为：
-1
- \
-  2
-   \
-    3
-     \
-      4
-       \
-        5
-         \
-          6
-```
-
-Solution
-
-- 将当前右子树放到当前左子树最右节点的右子树上，将当前左子树改为右子树，时间O(n)，空间O(1)
-
-Code
-
-```python
-class Solution:
-    def flatten(self, root: TreeNode) -> None:
-        def get_right_end(node):
-            while node.right:
-                node = node.right
-            return node
-
-        cur = root
-        while cur:
-            if cur.left:
-                right_end = get_right_end(cur.left)
-                right_end.right = cur.right
-                cur.right = cur.left
-                cur.left = None
-            cur = cur.right
-        return root
-```
-
-引申：Morris 遍历算法（时间O(n)，空间O(1)遍历二叉树），见94. 二叉树的中序遍历
-
-### 25. K 个一组反转链表
-
-给你一个链表，每 *k* 个节点一组进行翻转，请你返回翻转后的链表。如果节点总数不是 *k* 的整数倍，那么请将最后剩余的节点保持原有顺序。要求实际交换节点而不是改变内部的值。
-
-Solution
-
-- 检查剩余节点是否有K个/先扫描链表获得长度，反转
-
-Code
-
-```python
-# Definition for singly-linked list.
-# class ListNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.next = None
-
-class Solution:
-    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
-        def reverseNth(head, n):
-            cur = head
-            prev = None
-            for i in range(n):
-                post = cur.next
-                cur.next = prev
-                prev = cur
-                cur = post
-            head.next = cur
-            return prev, head
-        cur = head
-        prev = None
-        new_head = head
-        while True:
-            # check reversibility
-            temp = cur
-            for _ in range(k):
-                if not temp:
-                    return new_head
-                temp = temp.next
-            cur, old_head = reverseNth(cur,k) # new/old head of sub-sequence
-            if new_head is head and k != 1:
-                new_head = cur
-            if prev:
-                prev.next = cur
-            prev = old_head
-            cur = old_head.next
-        return new_head
-```
-
-### 82. 删除排序列表中的重复元素 Ⅱ
-
-Solution
-
-- 判断是否重复数字的开端，若是，连续删除具有相同值的节点
-
-Code
-
-```python
-# Definition for singly-linked list.
-# class ListNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.next = None
-
-class Solution:
-    def deleteDuplicates(self, head: ListNode) -> ListNode:
-        dummy = ListNode(-1)
-        dummy.next = head
-        cur = dummy
-        while cur.next and cur.next.next:
-            if cur.next.val == cur.next.next.val: # check if cur.next is the beginning of deletion
-                temp = cur.next
-                while temp and temp.val == cur.next.val:
-                    temp = temp.next
-                cur.next = temp
-            else:
-                cur = cur.next
-        return dummy.next
-```
-
-### 1367. 二叉树中的列表
-
-给你一棵以 root 为根的二叉树和一个 head 为第一个节点的链表。如果在二叉树中，存在一条一直向下的路径，且每个点的数值恰好一一对应以 head 为首的链表中每个节点的值，那么请你返回 True ，否则返回 False 。
-
-Solution
-
-- 对于每个子问题中的 root，先判断是否能从 root 开始对应链表中的值，再判断左右子节点为根时是否对应
-
-Code
-
-```python
-class Solution:
-    def isPartialSubPath(self, head: ListNode, root: TreeNode) -> bool:
-        if not head:
-            return True
-        elif not root:
-            return False
-        if head.val == root.val:
-            return self.isPartialSubPath(head.next, root.left) or \
-        		self.isPartialSubPath(head.next, root.right)
-        else:
-            return False
-
-    def isSubPath(self, head: ListNode, root: TreeNode) -> bool:
-        if not head:
-            return True
-        elif not root:
-            return False
-        if head.val == root.val:
-            return self.isPartialSubPath(head.next, root.left) or \
-                self.isPartialSubPath(head.next, root.right) or \
-                self.isSubPath(head, root.left) or \
-                self.isSubPath(head, root.right)
-        else:
-            return self.isSubPath(head, root.left) or \
-                    self.isSubPath(head, root.right)
-```
-
-### 86. 分隔链表
-
-给定一个链表和一个特定值 *x*，对链表进行分隔，使得所有小于 *x* 的节点都在大于或等于 *x* 的节点之前。保留两个分区中每个节点的初始相对位置。
-
-**示例:**
-
-```
-输入: head = 1->4->3->2->5->2, x = 3
-输出: 1->2->2->4->3->5
-```
-
-Solution
-
-- 用两个指针分别维护一个子链表，最后将二者连接起来
-
-Code
-
-```python
-class Solution:
-    def partition(self, head: ListNode, x: int) -> ListNode:
-        small = ListNode(None)
-        large = ListNode(None)
-        small_head = small
-        large_head = large
-        while head:
-            if head.val < x:
-                small.next = head
-                small = small.next
-            else:
-                large.next = head
-                large = large.next
-            head = head.next
-        large.next = None
-        small.next = large_head.next
-        return small_head.next
-```
-
-### 面试题 02.06. 回文链表:star:
-
-检查输入的链表是否回文
-
-Solution
-
-- 快慢指针找到中点后，反转后半链表，最后和前半链表作比较
-
-Code
-
-```python
-class Solution:
-    def isPalindrome(self, head: ListNode) -> bool:
-        if not head:
-            return True
-        slow, fast = head, head
-        while fast and fast.next:
-            slow = slow.next
-            fast = fast.next.next
-        pre, cur, post = None, slow, slow.next
-        while cur:
-            cur.next = pre
-            pre = cur
-            cur = post
-            if post:
-                post = post.next
-        # pre is the head of right-half linked-list
-        # if len(head) is odd, the end of pre and head should be the same node
-        while pre: 
-            if pre.val != head.val:
-                return False
-            pre = pre.next
-            head = head.next
-        return True
-```
-
-### 445. 两数相加 II
-
-给定两个非空链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。可以假设除了数字 0 之外，这两个数字都不会以零开头。
-
-**示例：**
-
-```
-输入：(7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
-输出：7 -> 8 -> 0 -> 7
-```
-
-Solution
-
-- 用栈（list）存储值，倒序构建新的链表
-
-Code
-
-```python
-class Solution:
-    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
-        if not l1: return l2
-        if not l2: return l1
-        s1, s2 = [], []
-        while l1:
-            s1.append(l1.val)
-            l1 = l1.next
-        while l2:
-            s2.append(l2.val)
-            l2 = l2.next
-        cur = None
-        remaining = 0
-        while s1 or s2 or remaining > 0:
-            digit_sum = remaining
-            if s1:
-                digit_sum += s1.pop()
-            if s2:
-                digit_sum += s2.pop()
-            new_node = ListNode(digit_sum%10)
-            remaining = digit_sum // 10
-            new_node.next = cur
-            cur = new_node
-        return cur
-```
-
-### 面试题 02.05. 链表求和
-
-题目同上，但链表顺序变为倒序
-
-Code
-
-```python
-class Solution:
-    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
-        if not l1:
-            return l2
-        if not l2:
-            return l1
-        head = ListNode(None)
-        cur = head
-        remain = 0
-        while l1 or l2 or remain:
-            if (not l1 or not l2) and remain == 0:
-                cur.next = l1 if not l2 else l2
-                return head.next
-            value = remain
-            value += l1.val if l1 else 0
-            value += l2.val if l2 else 0
-            remain = value // 10
-            cur.next = ListNode(value%10)
-            cur = cur.next
-            l1 = l1.next if l1 else None
-            l2 = l2.next if l2 else None
-        return head.next
-```
-
-
-
-### 143. 重排链表
-
-给定一个单链表 *L*：*L*0→*L*1→…→*L*n-1→*L*n ，将其重新排列后变为： *L*0→*L*n→*L*1→*L*n-1→*L*2→*L*n-2→… 要求进行实际节点交换而不是单纯改变节点内部值。
-
-Solution
-
-- 方法一
-  - 
-- 方法二
-  - 快慢指针找到中位节点后翻转后半节点，将后半节点整合进前半
-
-Code
-
-```python
-class Solution:
-    # Solution 1
-    def reorderList(self, head: ListNode) -> None:
-        
-    # Solution 2
-    def reorderList(self, head: ListNode) -> None:
-        if not head or not head.next:
-            return head
-        # let slow stop at or before the median so that we can set the end of first half to be None
-        slow, fast = head, head.next 
-        while fast and fast.next:
-            fast = fast.next.next
-            slow = slow.next
-        tmp = slow
-        slow = slow.next
-        tmp.next = None
-        prev, cur = None, slow
-        while cur:
-            next_node = cur.next
-            cur.next = prev
-            prev = cur
-            cur = next_node
-        head1, head2 = head, prev
-        while head2:
-            next_head1 = head1.next
-            head1.next = head2
-            head2 = head2.next
-            head1.next.next = next_head1
-            head1 = next_head1
-        if head1:
-            head1.next = None
-        return head
-```
-
-
-
-## Array
-
-### 001 两数之和:star:
-
-给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
-
-```
-Input: 
-[2, 7, 11, 15]
-9
-Output: 
-[0,1]
-```
-
-Solution
-
-- 暴力解
-
-  - 为每个值遍历一遍数组，时间复杂度O(n^2)，空间复杂度O(1)
-
-- 哈希法
-
-  1. 为每个整数-序号的键值对构造映射，在key中搜索另一个加数，时间复杂度O(n)，空间复杂度O(n)
-
-  2. item in dict 平均时间复杂度O(1) 【基础知识.md/Python/数据结构/dict】
-
-Code
-
-```python
-class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        a = {}
-        for i, val in enumerate(nums):
-            if a.get(target-val) is not None:
-                return [a.get(target-val), i]
-            a[val] = i
-```
-
-
-
-## Tree
+# Tree
 
 ### 94. 二叉树的中序遍历:star:
 
@@ -768,9 +728,45 @@ class Solution:
         return res
 ```
 
+# Array
 
+### 001 两数之和:star:
 
-## Number
+给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
+
+```
+Input: 
+[2, 7, 11, 15]
+9
+Output: 
+[0,1]
+```
+
+Solution
+
+- 暴力解
+
+  - 为每个值遍历一遍数组，时间复杂度O(n^2)，空间复杂度O(1)
+
+- 哈希法
+
+  1. 为每个整数-序号的键值对构造映射，在key中搜索另一个加数，时间复杂度O(n)，空间复杂度O(n)
+
+  2. item in dict 平均时间复杂度O(1) 【基础知识.md/Python/数据结构/dict】
+
+Code
+
+```python
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        a = {}
+        for i, val in enumerate(nums):
+            if a.get(target-val) is not None:
+                return [a.get(target-val), i]
+            a[val] = i
+```
+
+# Number
 
 ### 343. 整数拆分:star:
 
