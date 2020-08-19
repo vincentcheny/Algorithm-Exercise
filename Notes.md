@@ -661,6 +661,36 @@ class Solution:
         return head.next
 ```
 
+### 面试题 02.01. 移除重复节点
+
+移除未排序链表中的重复节点。保留最开始出现的节点。
+
+**示例:**
+
+```
+ 输入：[1, 2, 3, 3, 2, 1]
+ 输出：[1, 2, 3]
+```
+
+Code
+
+```python
+class Solution:
+    def removeDuplicateNodes(self, head: ListNode) -> ListNode:
+        num = set()
+        cur = ListNode(None)
+        cur.next = head
+        while cur.next:
+            if cur.next.val in num:
+                cur.next = cur.next.next
+            else:
+                num.add(cur.next.val)
+                cur = cur.next
+        return head
+```
+
+
+
 ## 链表操作
 
 ### 138. 复制带随机指针的链表:star:
@@ -740,6 +770,50 @@ class Solution:
             cur = cur.next
         return d[head]
 ```
+
+#### [430. 扁平化多级双向链表](https://leetcode-cn.com/problems/flatten-a-multilevel-doubly-linked-list/)
+
+多级双向链表中，除了指向下一个节点和前一个节点指针之外，它还有一个子链表指针，可能指向单独的双向链表。这些子列表也可能会有一个或多个自己的子项，依此类推，生成多级数据结构，如下面的示例所示。
+
+给你位于列表第一级的头节点，请你扁平化列表，使所有结点出现在单级双链表中。【点链接看示意图】
+
+Solution
+
+- 利用栈把 next 和 child 分别入栈，即优先 child
+
+Code
+
+```python
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val, prev, next, child):
+        self.val = val
+        self.prev = prev
+        self.next = next
+        self.child = child
+"""
+class Solution:
+    def flatten(self, head: 'Node') -> 'Node':
+        if not head:
+            return head
+        stack = [head]
+        dummy = Node(-1, None, None, None)
+        cur = dummy
+        while len(stack) > 0:
+            cur.next = stack.pop()
+            cur.next.prev = cur
+            if cur.next.next:
+                stack.append(cur.next.next)
+            if cur.next.child:
+                stack.append(cur.next.child)
+                cur.next.child = None
+            cur = cur.next
+        dummy.next.prev = None # Be careful
+        return dummy.next
+```
+
+
 
 # Tree
 
