@@ -510,6 +510,41 @@ class Solution:
         return True
 ```
 
+### 1019. 链表中的下一个更大节点
+
+每个节点都可能有下一个更大值（next larger value）：对于 node_i，如果其 next_larger(node_i) 是 node_j.val，那么就有 j > i 且  node_j.val > node_i.val，而 j 是可能的选项中最小的那个。如果不存在这样的 j，那么下一个更大值为 0 。
+
+**示例：**
+
+```
+输入：[2,7,4,3,5]
+输出：[7,0,5,5,0]
+```
+
+Solution
+
+- 使用一个递减栈存储当前未找到更大值的val，每当处理新val时，通过stack.pop()向前检查
+
+Code
+
+```python
+class Solution:
+    def nextLargerNodes(self, head: ListNode) -> List[int]:
+        vals = list()
+        cur = head
+        while cur:
+            vals.append(cur.val)
+            cur = cur.next
+        stack = list()
+        res = [0] * len(vals)
+        for i in range(len(vals)):
+            while stack and vals[i] > vals[stack[-1]]:
+                res[stack[-1]] = vals[i]
+                stack.pop()
+            stack.append(i)
+        return res
+```
+
 
 
 ## 链表值
@@ -771,7 +806,7 @@ class Solution:
         return d[head]
 ```
 
-#### [430. 扁平化多级双向链表](https://leetcode-cn.com/problems/flatten-a-multilevel-doubly-linked-list/)
+### 430. 扁平化多级双向链表
 
 多级双向链表中，除了指向下一个节点和前一个节点指针之外，它还有一个子链表指针，可能指向单独的双向链表。这些子列表也可能会有一个或多个自己的子项，依此类推，生成多级数据结构，如下面的示例所示。
 
