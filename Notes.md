@@ -897,6 +897,59 @@ class Solution:
         return res
 ```
 
+### 面试题04.04. 检查二叉树平衡性
+
+实现一个函数，检查二叉树是否平衡。在这个问题中，平衡树的定义如下：任意一个节点，其两棵子树的高度差不超过 1。
+
+Solution
+
+- 使用前序遍历检查当前节点的子树是否平衡以及以子节点为根时是否平衡，想到使用``lru_cache()``和 early stopping 来优化
+
+```python
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def isBalanced(self, root: TreeNode) -> bool:
+        if not root: 
+            return True
+        return abs(self.depth(root.right) - self.depth(root.left)) < 2 and \ 
+    		self.isBalanced(root.left) and \
+        	self.isBalanced(root.right)
+
+    
+    @lru_cache(maxsize=32)
+    def depth(self, root):
+        if not root: 
+            return 0
+        return max(self.depth(root.left), self.depth(root.right))+1
+
+# My optimization 
+# Not intuitive enough as an appropriate function because depth() returns something that is not about depth
+class Solution:
+    def isBalanced(self, root: TreeNode) -> bool:
+        if not root: return True
+        return self.depth(root) >= 0
+
+    @lru_cache(maxsize=32)
+    def depth(self, root):
+        if not root: 
+            return 0
+        left_height = self.depth(root.left)
+        if left_height < 0: return -1
+        right_height = self.depth(root.right)
+        if right_height < 0: return -1
+        if abs(left_height - right_height) >= 2: 
+            return -1
+        else:
+            return max(left_height, right_height) + 1
+```
+
+
+
 # Array
 
 ### 001 两数之和:star:
