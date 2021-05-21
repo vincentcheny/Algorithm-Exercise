@@ -1048,3 +1048,31 @@ class Solution:
         return -1
 ```
 
+# String
+
+### 3. 无重复字符的最长子串
+
+给定一个字符串，请你找出其中不含有重复字符的 **最长子串** 的长度。
+
+Solution
+
+用左右双指针维护一个滑动窗口去裁减字符串子串，建立一个哈希表来跟踪重复字符的最新位置。不断移动右指针，每当遇到一个重复字符c时，将左指针移动到窗口内重复字符的下一位。移动右指针的过程中，不断维护一个最大长度值作为最终结果。
+
+Code
+
+```python
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        if len(s) < 2:
+            return len(s)
+        occ = {}
+        left = 0
+        ans = 0
+        for right in range(len(s)):
+            if s[right] in occ and occ[s[right]] + 1 > left:
+                left = occ[s[right]] + 1
+            occ[s[right]] = right # 更新已出现字符的最新位置
+            ans = max(ans, right - left + 1)
+        return ans
+```
+
