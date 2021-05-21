@@ -523,7 +523,7 @@ class Solution:
 
 Solution
 
-- 使用一个递减栈存储当前未找到更大值的val，每当处理新val时，通过stack.pop()向前检查
+- 使用一个递减栈存储当前未找到更大值的val的pos，每当处理新val时，通过stack.pop()向前检查
 
 Code
 
@@ -928,7 +928,7 @@ class Solution:
         return max(self.depth(root.left), self.depth(root.right))+1
 
 # My optimization 
-# Not intuitive enough as an appropriate function because depth() returns something that is not about depth
+# Not intuitive enough as an appropriate function because depth() returns something not equal to depth
 class Solution:
     def isBalanced(self, root: TreeNode) -> bool:
         if not root: return True
@@ -983,8 +983,8 @@ class Solution:
     def twoSum(self, nums: List[int], target: int) -> List[int]:
         a = {}
         for i, val in enumerate(nums):
-            if a.get(target-val) is not None:
-                return [a.get(target-val), i]
+            if a[target-val] is not None:
+                return [a[target-val], i]
             a[val] = i
 ```
 
@@ -996,7 +996,7 @@ class Solution:
 
 Solution
 $$
-设 g(t)=e^{t},h(x)=\frac{\ln x}{x},f(x)=x^{\frac{n}{x}}，则有f(x)=e^{\frac{n\ln x}{x}}=g(n\cdot h(x))
+设 g(t)=e^{t},h(x)=\frac{\ln x}{x},f(x)=x^{\frac{n}{x}}，则有f(x)=(e^{\ln x})^{\frac{n}{x}}=e^{\frac{n\ln x}{x}}=g(n\cdot h(x))
 \\
 \because g(t)在t\in [0,+\infty)上单调递增
 \therefore h(x)和f(x)单调性相同
