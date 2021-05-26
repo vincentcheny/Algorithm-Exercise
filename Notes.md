@@ -988,6 +988,43 @@ class Solution:
             a[val] = i
 ```
 
+### 004 寻找两个正序数组的中位数
+
+给定两个大小分别为 `m` 和 `n` 的正序（从小到大）数组 `nums1` 和 `nums2`。请你找出并返回这两个正序数组的 **中位数** 。
+
+Code
+
+```python
+class Solution:
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        def getKthElement(k):
+            index1, index2 = 0, 0
+            while True:
+                if index1 == m: # 超出数组1范围
+                    return nums2[index2 + k - 1]
+                if index2 == n:
+                    return nums1[index1 + k - 1]
+                if k == 1:
+                    return min(nums1[index1], nums2[index2])
+
+                newIndex1 = min(index1 + k//2 - 1, m - 1) # 每次缩小剩余检测范围的（前）一半
+                newIndex2 = min(index2 + k//2 - 1, n - 1)
+                if nums1[newIndex1] <= nums2[newIndex2]:
+                    k -= newIndex1 - index1 + 1
+                    index1 = newIndex1 + 1
+                else:
+                    k -= newIndex2 - index2 + 1
+                    index2 = newIndex2 + 1
+
+        m, n = len(nums1), len(nums2)
+        if (m+n)%2 == 1:
+            return getKthElement((m+n+1)//2)
+        else:
+            return (getKthElement((m+n)//2) + getKthElement((m+n+2)//2)) / 2
+```
+
+
+
 # Number
 
 ### 343. 整数拆分:star:
